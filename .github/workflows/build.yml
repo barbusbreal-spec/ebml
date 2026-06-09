@@ -29,37 +29,32 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
+
+      - name: Setup Gradle 7.5
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '7.5'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install build tools and platform
-        run: sdkmanager "build-tools;29.0.3" "platforms;android-19"
-
-      - name: Generate Gradle wrapper jar
-        run: |
-          chmod +x gradlew
-          # gradle-wrapper.jar is a binary not stored in git — generate it
-          gradle wrapper --gradle-version 7.5 --distribution-type bin
+      - name: Install SDK components
+        run: sdkmanager "build-tools;33.0.2" "platforms;android-33"
 
       - name: Determine build type
         id: build_type
         run: |
           TYPE="${{ github.event.inputs.build_type }}"
-          if [ -z "$TYPE" ]; then
-            TYPE="debug"
-          fi
+          if [ -z "$TYPE" ]; then TYPE="debug"; fi
           echo "type=$TYPE" >> $GITHUB_OUTPUT
-          echo "Building: $TYPE"
 
       - name: Build Debug APK
         if: steps.build_type.outputs.type == 'debug'
-        run: ./gradlew assembleDebug --stacktrace
+        run: gradle assembleDebug --stacktrace
 
       - name: Build Release APK (unsigned)
         if: steps.build_type.outputs.type == 'release'
-        run: ./gradlew assembleRelease --stacktrace
+        run: gradle assembleRelease --stacktrace
 
       - name: Find APK
         id: find_apk
