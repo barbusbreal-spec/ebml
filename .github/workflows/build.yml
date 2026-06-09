@@ -1,0 +1,75 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Тип сборки'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+          - release
+  push:
+    branches: [ main, master, claude/** ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install build tools 29.0.3
+        run: sdkmanager "build-tools;29.0.3" "platforms;android-19"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        continue-on-error: true
+
+      - name: Determine build type
+        id: build_type
+        run: |
+          TYPE="${{ github.event.inputs.build_type }}"
+          if [ -z "$TYPE" ]; then
+            TYPE="debug"
+          fi
+          echo "type=$TYPE" >> $GITHUB_OUTPUT
+          echo "Building: $TYPE"
+
+      - name: Build Debug APK
+        if: steps.build_type.outputs.type == 'debug'
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Build Release APK (unsigned)
+        if: steps.build_type.outputs.type == 'release'
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Find APK
+        id: find_apk
+        run: |
+          APK=$(find app/build/outputs/apk -name "*.apk" | head -1)
+          echo "path=$APK" >> $GITHUB_OUTPUT
+          echo "Found APK: $APK"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: EblanBrowser-${{ steps.build_type.outputs.type }}-${{ github.run_number }}
+          path: ${{ steps.find_apk.outputs.path }}
+          if-no-files-found: error
+          retention-days: 30
