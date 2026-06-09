@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Eblan Browser</string>
+    <string name="settings">Настройки</string>
+    <string name="bookmarks">Закладки</string>
+    <string name="history">История</string>
+</resources>

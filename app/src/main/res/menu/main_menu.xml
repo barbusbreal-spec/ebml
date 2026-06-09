@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_bookmark"
+        android:title="Добавить закладку"
+        android:icon="@android:drawable/btn_star_big_off"
+        android:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_new_tab"
+        android:title="Новая вкладка"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_home"
+        android:title="Домашняя страница"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_bookmarks"
+        android:title="Закладки"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_history"
+        android:title="История"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_share"
+        android:title="Поделиться"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="Настройки"
+        android:showAsAction="never" />
+
+</menu>
