@@ -34,12 +34,14 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install build tools 29.0.3
+      - name: Install build tools and platform
         run: sdkmanager "build-tools;29.0.3" "platforms;android-19"
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-        continue-on-error: true
+      - name: Generate Gradle wrapper jar
+        run: |
+          chmod +x gradlew
+          # gradle-wrapper.jar is a binary not stored in git — generate it
+          gradle wrapper --gradle-version 7.5 --distribution-type bin
 
       - name: Determine build type
         id: build_type
